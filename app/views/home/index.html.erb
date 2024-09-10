@@ -1,9 +1,44 @@
-<h1>Welcome to シンガクセイショウ!</h1>
-<p>
-  ここは、学生のためのアプリケーションです。
-  <% if user_signed_in? %>
-    <p>ログインしています。ようこそ、<%= current_user.name %>さん！</p>
+<% if user_signed_in? %>
+
+  <% if current_user.student_card_front.attached? && current_user.student_card_back.attached? %>
+    <h2>学生証</h2>
   <% else %>
-    <p>ログインしていません。アカウントを作成して、すぐに利用を開始しましょう。</p>
+    <h2>学生証のアップロード</h2>
+    
+    <%= form_with model: current_user, url: upload_student_card_path, local: true, html: { multipart: true }, method: :post do |form| %>
+      <div>
+        <%= form.label :student_card_front, "学生証の表面" %>
+        <%= form.file_field :student_card_front %>
+      </div>
+
+      <div>
+        <%= form.label :student_card_back, "学生証の裏面" %>
+        <%= form.file_field :student_card_back %>
+      </div>
+
+      <div>
+        <%= form.submit "アップロード" %>
+      </div>
+    <% end %>
   <% end %>
-</p>
+
+  <% if current_user.student_card_front.attached? %>
+    <h3>表面:</h3>
+    <%= image_tag current_user.student_card_front %>
+  <% end %>
+
+  <% if current_user.student_card_back.attached? %>
+    <h3>裏面:</h3>
+    <%= image_tag current_user.student_card_back %>
+  <% end %>
+
+<% else %>
+  <div>
+  <h2>スマホで学生証を表示すると</h2>
+  <ul>
+    <li>図書館やPC室に入ることができます</li>
+    <li>飲食店で学生証の代わりとして提示できます</li>
+  </ul>
+</div>
+<% end %>
+
